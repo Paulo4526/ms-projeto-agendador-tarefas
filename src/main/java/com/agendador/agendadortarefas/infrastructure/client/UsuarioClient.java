@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "usuario", url = "${usuario.url}")
 public interface UsuarioClient {
     //Fazendo a requisição, apontando para o MS-USUARIO buscando usuario por e-mail, também é necessário passar o token para o metodo
-    @GetMapping
+    @GetMapping("/usuario")
     ShowUsuarioDTO buscaUsuarioPorEmail(@RequestParam("email") String email, @RequestHeader("Authorization") String token);
 }
