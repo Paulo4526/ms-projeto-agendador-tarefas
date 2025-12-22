@@ -1,53 +1,53 @@
+version: "3.9"
+
 services:
   mongo:
     image: mongo
+    container_name: mongo-agendador
     restart: on-failure
-    env_file:
-      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: agendador
+      MONGO_INITDB_ROOT_PASSWORD: 123
+      MONGO_INITDB_DATABASE: admin
     ports:
-      - 27017:27017
+      - "27017:27017"
     networks:
       - agendador-mongo
-    healthcheck:
-      test: [ "CMD-SHELL", "mongosh -u \"$${MONGO_INITDB_ROOT_USERNAME}\" -p \"$${MONGO_INITDB_ROOT_PASSWORD}\" --authenticationDatabase $${MONGO_AUTH_SOURCE} --eval \"db.adminCommand({ ping: 1 })\"" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+
 
   mongo-express:
     image: mongo-express
+    container_name: mongo-express-agendador
     restart: on-failure
-    env_file:
-      - .env
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
-      ME_CONFIG_BASICAUTH: 'false'
+      ME_CONFIG_MONGODB_ADMINUSERNAME: agendador
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 123
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_BASICAUTH: "false"
+
     ports:
-      - 8082:8081
+      - "8084:8081"
     depends_on:
-      mongo:
-        condition: service_healthy
+      - mongo
     networks:
       - agendador-mongo
 
-  #Iniciando a tarefa de build da aplicação para inicialização
+
   api:
-    #Informando que o build será feito a aprtir do diretório principal
+    container_name: api-agendador-mongo
     build: .
-    #Informando as portas
+    restart: on-failure
     ports:
       - "8081:8080"
-    #Informando o comando que para que essa tarefa seja executara é preciso que a tarefa DB esteja concluida e saudavel
     depends_on:
-      db:
-        condition: service_healthy
-    #Passando as variaveis de ambiente da aplicação que será informada no aplications.properties
+      - mongo
     environment:
-      - DATABASE_URL=jdbc:postgresql://db:5432/agendador-usuario?createDatabaseIfNotExist=true
-      - DATABASE_USER=agendador
-      - DATABASE_PASSWORD=123
+      SPRING_DATA_MONGODB_URI: mongodb://agendador:123@mongo:27017/db_tarefa?authSource=admin
+      # Quando o ms-usuario roda na MÁQUINA HOST (fora do docker), o container acessa via host.docker.internal
+      # Se você colocar o ms-usuario no mesmo docker-compose, troque para: http://usuario:8080
+      USUARIO_URL: http://host.docker.internal:8080
     networks:
       - agendador-mongo
 

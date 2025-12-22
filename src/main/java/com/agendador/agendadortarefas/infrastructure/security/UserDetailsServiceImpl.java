@@ -1,6 +1,6 @@
 package com.agendador.agendadortarefas.infrastructure.security;
 
-import com.agendador.agendadortarefas.controller.DTO.ShowUsuarioDTO;
+import com.agendador.agendadortarefas.controller.dto.usuario.ShowUsuarioDTO;
 import com.agendador.agendadortarefas.infrastructure.client.UsuarioClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;

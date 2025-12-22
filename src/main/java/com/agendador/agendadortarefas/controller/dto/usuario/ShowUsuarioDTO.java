@@ -1,4 +1,4 @@
-package com.agendador.agendadortarefas.controller.DTO;
+package com.agendador.agendadortarefas.controller.dto.usuario;
 
 import lombok.*;
 
