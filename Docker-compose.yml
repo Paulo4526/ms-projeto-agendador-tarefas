@@ -13,6 +13,15 @@ services:
       - "27017:27017"
     networks:
       - agendador-mongo
+    #Informando o volume onde será salvo os dados, nunca utilizar a barra invertida "\" para informar diretórios
+    volumes:
+      - "D:/Javanauta/volumes/mongo_agendador:/data/db"
+    #Criando checagem de saúde do banco, caso esteja ok as outras aplicações como o servidor e o mong-express subirão.
+    healthcheck:
+      test: [ "CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 
   mongo-express:
@@ -30,7 +39,8 @@ services:
     ports:
       - "8084:8081"
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     networks:
       - agendador-mongo
 
@@ -42,7 +52,8 @@ services:
     ports:
       - "8081:8080"
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://agendador:123@mongo:27017/db_tarefa?authSource=admin
       # Quando o ms-usuario roda na MÁQUINA HOST (fora do docker), o container acessa via host.docker.internal
