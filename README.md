@@ -65,12 +65,6 @@ do ecossistema, como o serviço de usuários e o serviço de notificações.
   <li>GitHub Actions (CI)</li>
 </ul>
 
-<h3>🧪 Qualidade</h3>
-<ul>
-  <li>JUnit 5</li>
-  <li>Spring Boot Test</li>
-</ul>
-
 <hr>
 
 <h2>🏗️ Conceitos Arquiteturais</h2>
