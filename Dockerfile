@@ -22,6 +22,18 @@ COPY --from=build /opt/app/build/libs/*.jar /opt/app/app.jar
 #Definindo o diretório padrão dentro da imagem docker
 WORKDIR /opt/app
 #Porta de entrada da aplicação
-EXPOSE 8081
+EXPOSE 8080
 #Comando de entrada para inicio da aplicação
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
+#Comando para criar a imagem docker: docker build -t nome-do-projeto .
+#Comando para criar o contaniner a partir de uma imagem no projeto docker: docker run -dti -p 8081:8080 --name tarefas-projeto-agendador nome-do-projeto
+#Explicação de comandos:
+#docker run -> comando que cria o container a partir da imagem
+#-dti -> comando para que ele tenha diretiva, e iteração
+# -p 8086:8080 -> a porta 8080 do container será exposta para fora como porta 8081
+# nome-do-projeto -> nome da imagem criada no primeiro comando onde será utilizada como base para criação do nosso container
+
+#Parametros adicionais:
+# --name -> parametro para setar o nome do container a ser criado
+# -e -> parametro para indicar uma variavel de ambiente caso setada
