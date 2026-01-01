@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -32,7 +33,7 @@ public class TarefaService {
         //Setando o email recebido no token
         tarefasDTO.setEmailUsuario(email);
         //Setando a data e hora da criação
-        tarefasDTO.setDataCriacao(LocalDateTime.now());
+        tarefasDTO.setDataCriacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         //Setando o status do agendador
         tarefasDTO.setStatus(StatusNotificacaoEnum.PENDENTE);
         //Salvando os valores recebidos da requisição e convertidos na entidade TarefasEntity
@@ -44,7 +45,7 @@ public class TarefaService {
     //Metodo que retorna uma lista de tarefas entre datas
     public List<ShowTarefaDTO> buscarTarefasAgendadas(LocalDateTime dataEventoInicio, LocalDateTime dataEventoFinal) {
         //Retornando uma lista de Tarefas utilizando o converter, aqui ainda não estamos utilizando o converter.
-        return tarefaConverter.paraListaTarefaDTO(tarefasRepository.findByDataEventoBetween(dataEventoInicio, dataEventoFinal));
+        return tarefaConverter.paraListaTarefaDTO(tarefasRepository.findByDataEventoBetweenAndStatus(dataEventoInicio, dataEventoFinal, StatusNotificacaoEnum.PENDENTE));
     }
 
     //Metodo que busca tarefas pelo email
@@ -72,7 +73,7 @@ public class TarefaService {
         try {
             TarefasEntity tarefasEntity = tarefasRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Usuário não encontrado: " + id));
             tarefasEntity.setStatus(status);
-            tarefasEntity.setDataAlteracao(LocalDateTime.now());
+            tarefasEntity.setDataAlteracao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
             return tarefaConverter.paraTarefaDTO(tarefasRepository.save(tarefasEntity));
         } catch (TaskNotFoundException e) {
             throw new TaskNotFoundException("Erro ao alterar status da tarefa: " + e.getCause());
@@ -86,7 +87,7 @@ public class TarefaService {
             TarefasEntity tarefasEntity = tarefasRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Tarefa não Encontrada! Id da tarefa inexistente: " + id));
             //Realiza a alteração pontual ou geral do que foi passado e salva na Entidade TarefaEntity
             tarefaUpdateConverter.updateTarefas(tarefasDTO, tarefasEntity);
-            tarefasEntity.setDataAlteracao(LocalDateTime.now());
+            tarefasEntity.setDataAlteracao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
             //Após o processo assim ser realizado, é convertido a tarefa para DTO para mostrar o retorno
             return tarefaConverter.paraTarefaDTO(tarefasRepository.save(tarefasEntity));
         } catch (TaskNotFoundException e) {
